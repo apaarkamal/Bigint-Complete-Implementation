@@ -139,45 +139,6 @@ struct bigint {
 		return make_pair(q, r / norm);
 	}
 
-	friend bigint sqrt(const bigint &a1) {
-		bigint a = a1;
-		while (a.z.empty() || (int) a.z.size() % 2 == 1) {
-			a.z.push_back(0);
-		}
-		int n = a.z.size();
-		int firstDigit = sqrt(a.z[n - 1] * base + a.z[n - 2]);
-		int norm = base / (firstDigit + 1);
-		a *= norm;
-		a *= norm;
-		while (a.z.empty() || (int) a.z.size() % 2 == 1) {
-			a.z.push_back(0);
-		}
-		bigint r = a.z[n - 1] * base + a.z[n - 2];
-		firstDigit = sqrt(a.z[n - 1] * base + a.z[n - 2]);
-		int q = firstDigit;
-		bigint res;
-		for (int j = n / 2 - 1; j >= 0; j--) {
-			for (;; --q) {
-				bigint r1 = (r - (res * 2 * base + q) * q) * base * base +
-				            (j > 0 ? a.z[2 * j - 1] * base + a.z[2 * j - 2] : 0);
-				if (r1 >= 0) {
-					r = r1;
-					break;
-				}
-			}
-			res *= base;
-			res += q;
-			if (j > 0) {
-				int d1 = res.z.size() + 2 < r.z.size() ? r.z[res.z.size() + 2] : 0;
-				int d2 = res.z.size() + 1 < r.z.size() ? r.z[res.z.size() + 1] : 0;
-				int d3 = res.z.size() < r.z.size() ? r.z[res.z.size()] : 0;
-				q = (d1 * base * base + d2 * base + d3) / (firstDigit * 2);
-			}
-		}
-		res.trim();
-		return res / norm;
-	}
-
 	bigint operator/(const bigint &v) const {
 		return divmod(*this, v).first;
 	}
